@@ -1,14 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { supabaseClient } from '@/lib/supabaseClient';
+import { supabaseClient, Database } from '@/lib/supabaseClient';
 
-interface Annonce {
-  id: number;
-  titre: string;
-  contenu: string;
-  created_at: string;
-}
+type Annonce = Database['public']['Tables']['annonces']['Row'];
 
 export default function Annonces() {
   const [annonces, setAnnonces] = useState<Annonce[]>([]);
@@ -17,33 +12,23 @@ export default function Annonces() {
 
   useEffect(() => {
     const fetchAnnonces = async () => {
-      try {
-        // Vérification si on est en mode développement sans Supabase configuré
-        if (process.env.NODE_ENV === 'development' && 
-            (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)) {
-          console.log('Mode développement sans Supabase actif');
-          // Simuler un délai de chargement et des données de test
-          await new Promise(resolve => setTimeout(resolve, 800));
-          
-          // Données factices pour le développement
-          setAnnonces([
-            {
-              id: 1,
-              titre: 'Stage d\'équitation - Été 2025',
-              contenu: 'Rejoignez-nous pour notre stage d\'équitation estival du 15 au 30 juillet. Tous niveaux acceptés, à partir de 8 ans.',
-              created_at: new Date().toISOString()
-            },
-            {
-              id: 2,
-              titre: 'Balade au coucher de soleil',
-              contenu: 'Profitez d\'une expérience unique avec nos balades équestres au coucher de soleil tous les vendredis soir de juin.',
-              created_at: new Date(Date.now() - 7*24*60*60*1000).toISOString()
-            }
-          ]);
-          setIsLoading(false);
-          return;
-        }
-        
+      try
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      {
         const { data, error } = await supabaseClient
           .from('annonces')
           .select('*')
@@ -51,10 +36,10 @@ export default function Annonces() {
         
         if (error) throw error;
         
-        setAnnonces(data || []);
+        setAnnonces(data ?? []);
       } catch (err) {
         console.error('Erreur lors du chargement des annonces:', err);
-        setError(err instanceof Error ? err.message : 'Erreur lors du chargement des annonces. Supabase n\'est peut-être pas configuré correctement.');
+        setError(err instanceof Error ? err.message : 'Erreur lors du chargement des annonces.');
       } finally {
         setIsLoading(false);
       }

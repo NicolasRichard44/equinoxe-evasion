@@ -1,17 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { supabaseClient } from '@/lib/supabaseClient';
+import { supabaseClient, Database } from '@/lib/supabaseClient';
 
-interface Reservation {
-  id: number;
-  nom: string;
-  email: string;
-  date: string;
-  personnes: number;
-  commentaire: string;
-  created_at: string;
-}
+type Reservation = Database['public']['Tables']['reservations']['Row'];
 
 export default function Admin() {
   const [email, setEmail] = useState('');
@@ -41,24 +33,6 @@ export default function Admin() {
     setAuthError(null);
 
     try {
-      // Vérification si on est en mode développement sans Supabase configuré
-      if (process.env.NODE_ENV === 'development' && 
-          (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)) {
-        console.log('Mode développement sans Supabase actif - Connexion simulée');
-        // Simuler un délai de connexion
-        await new Promise(resolve => setTimeout(resolve, 800));
-        
-        // Autoriser la connexion avec admin@example.com / admin en mode développement
-        if (email === 'admin@example.com' && password === 'admin') {
-          setIsAuthenticated(true);
-          fetchReservations();
-        } else {
-          setAuthError('En mode développement, utilisez admin@example.com / admin');
-        }
-        setIsLoading(false);
-        return;
-      }
-      
       const { error } = await supabaseClient.auth.signInWithPassword({
         email,
         password,
@@ -87,38 +61,6 @@ export default function Admin() {
     setDataError(null);
 
     try {
-      // Vérification si on est en mode développement sans Supabase configuré
-      if (process.env.NODE_ENV === 'development' && 
-          (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)) {
-        console.log('Mode développement sans Supabase actif - Chargement des réservations simulé');
-        // Simuler un délai de chargement
-        await new Promise(resolve => setTimeout(resolve, 800));
-        
-        // Données factices pour le développement
-        setReservations([
-          {
-            id: 1,
-            nom: 'Jean Dupont',
-            email: 'jean.dupont@example.com',
-            date: '2025-07-15',
-            personnes: 2,
-            commentaire: 'Première fois à cheval, merci de prévoir un encadrement adapté.',
-            created_at: new Date().toISOString()
-          },
-          {
-            id: 2,
-            nom: 'Marie Martin',
-            email: 'marie.martin@example.com',
-            date: '2025-06-20',
-            personnes: 4,
-            commentaire: 'Nous sommes une famille avec 2 enfants de 8 et 10 ans.',
-            created_at: new Date(Date.now() - 3*24*60*60*1000).toISOString()
-          }
-        ]);
-        setIsLoadingData(false);
-        return;
-      }
-      
       const { data, error } = await supabaseClient
         .from('reservations')
         .select('*')
@@ -126,10 +68,10 @@ export default function Admin() {
       
       if (error) throw error;
       
-      setReservations(data || []);
+      setReservations(data ?? []);
     } catch (err) {
       console.error('Erreur lors du chargement des réservations:', err);
-      setDataError(err instanceof Error ? err.message : 'Erreur lors du chargement des réservations. Supabase n\'est peut-être pas configuré correctement.');
+      setDataError(err instanceof Error ? err.message : 'Erreur lors du chargement des réservations.');
     } finally {
       setIsLoadingData(false);
     }
@@ -234,7 +176,7 @@ export default function Admin() {
                         <td className="px-6 py-4 whitespace-nowrap">{reservation.email}</td>
                         <td className="px-6 py-4 whitespace-nowrap">{new Date(reservation.date).toLocaleDateString('fr-FR')}</td>
                         <td className="px-6 py-4 whitespace-nowrap">{reservation.personnes}</td>
-                        <td className="px-6 py-4">{reservation.commentaire || '-'}</td>
+                        <td className="px-6 py-4">{reservation.commentaire ?? '-'}</td>
                       </tr>
                     ))}
                   </tbody>

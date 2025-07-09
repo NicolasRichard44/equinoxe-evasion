@@ -1,29 +1,67 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
-// Utilisation d'URL test pendant le développement si les variables d'env ne sont pas définies
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder-supabase-url.com';
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-anon-key';
-
-let supabaseClient;
-
-// Création conditionnelle du client Supabase
-try {
-  supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
-} catch (error) {
-  console.error('Erreur lors de l\'initialisation de Supabase :', error);
-  // Créer un client mock pour éviter les erreurs dans le développement
-  supabaseClient = {
-    from: () => ({
-      select: () => ({ data: [], error: null }),
-      insert: () => ({ data: null, error: null }),
-      order: () => ({ data: [], error: null })
-    }),
-    auth: {
-      getSession: () => Promise.resolve({ data: { session: null } }),
-      signInWithPassword: () => Promise.resolve({ error: { message: 'Supabase n\'est pas configuré.' } }),
-      signOut: () => Promise.resolve()
-    }
+// Types pour la base de données
+export interface Database {
+  public: {
+    Tables: {
+      reservations: {
+        Row: {
+          id: number;
+          nom: string;
+          email: string;
+          date: string;
+          personnes: number;
+          commentaire: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: number;
+          nom: string;
+          email: string;
+          date: string;
+          personnes: number;
+          commentaire?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: number;
+          nom?: string;
+          email?: string;
+          date?: string;
+          personnes?: number;
+          commentaire?: string | null;
+          created_at?: string;
+        };
+      };
+      annonces: {
+        Row: {
+          id: number;
+          titre: string;
+          contenu: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: number;
+          titre: string;
+          contenu: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: number;
+          titre?: string;
+          contenu?: string;
+          created_at?: string;
+        };
+      };
+    };
   };
 }
+
+// Utilisation d'URL test pendant le développement si les variables d'env ne sont pas définies
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? 'https://placeholder-supabase-url.com';
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? 'placeholder-anon-key';
+
+// Création du client Supabase
+const supabaseClient: SupabaseClient<Database> = createClient(supabaseUrl, supabaseAnonKey);
 
 export { supabaseClient };

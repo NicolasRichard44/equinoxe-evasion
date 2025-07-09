@@ -8,12 +8,12 @@ export default function Home() {
         
         <div className="mb-8 text-amber-700">
           <p className="mb-4">
-            Découvrez notre centre de tourisme équestre niché au cœur d'un paysage naturel préservé.
+            Découvrez notre centre de tourisme équestre niché au cœur d&apos;un paysage naturel préservé.
             Nous vous proposons des balades à cheval inoubliables pour tous les niveaux, 
-            ainsi qu'un hébergement confortable dans notre gîte rural pour prolonger l'expérience.
+            ainsi qu&apos;un hébergement confortable dans notre gîte rural pour prolonger l&apos;expérience.
           </p>
           <p>
-            Notre équipe passionnée vous accueille toute l'année pour des moments 
+            Notre équipe passionnée vous accueille toute l&apos;année pour des moments 
             de déconnexion et de reconnexion avec la nature.
           </p>
         </div>

@@ -26,24 +26,6 @@ export default function Reservation() {
     setError(null);
 
     try {
-      // Vérification si on est en mode développement sans Supabase configuré
-      if (process.env.NODE_ENV === 'development' && 
-          (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)) {
-        console.log('Mode développement sans Supabase : ', formData);
-        // Simuler un délai de réponse
-        await new Promise(resolve => setTimeout(resolve, 800));
-        
-        setIsSubmitted(true);
-        setFormData({
-          nom: '',
-          email: '',
-          date: '',
-          personnes: 1,
-          commentaire: ''
-        });
-        return;
-      }
-      
       const { error } = await supabaseClient
         .from('reservations')
         .insert([formData]);
