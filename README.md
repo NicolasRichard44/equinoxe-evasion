@@ -1,83 +1,59 @@
-# Equinoxe Évasion
+# EquinoxeEvasion
 
-Site web pour un centre équestre proposant des activités et un hébergement en gîte.
+This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.0.1.
 
-## À propos du projet
+## Development server
 
-Equinoxe Évasion est un site web développé avec [Next.js](https://nextjs.org) qui permet aux visiteurs de :
-- Découvrir les activités du centre équestre
-- Réserver des activités via un formulaire
-- Consulter les annonces et actualités
-- Pour les administrateurs : gérer les réservations via un espace sécurisé
-
-### Structure du site
-
-Le site se compose de 4 pages principales :
-1. **Page d'accueil** : Présentation du centre équestre et de l'hébergement en gîte
-2. **Page de réservation** : Formulaire pour réserver des activités
-3. **Page d'annonces** : Liste des actualités et annonces
-4. **Page d'administration** : Espace sécurisé pour gérer les réservations
-
-## Technologies utilisées
-
-- **Frontend** : Next.js (App Router), TypeScript, Tailwind CSS
-- **Backend/Base de données** : Supabase (API, Auth, Database)
-
-## Getting Started
-
-First, run the development server:
+To start a local development server, run:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+ng serve
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
 
-## Structure du projet
+## Code scaffolding
 
-```
-src/
-├── app/
-│   ├── page.tsx              # Page d'accueil
-│   ├── reservation/
-│   │   └── page.tsx          # Formulaire de réservation
-│   ├── annonces/
-│   │   └── page.tsx          # Affichage des annonces
-│   └── admin/
-│       └── page.tsx          # Interface d'administration
-└── lib/
-    └── supabaseClient.ts     # Client pour l'API Supabase
+Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+
+```bash
+ng generate component component-name
 ```
 
-## Configuration de la base de données
+For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
 
-Ce projet utilise [Supabase](https://supabase.com) comme backend. Pour mettre en place votre propre instance:
+```bash
+ng generate --help
+```
 
-1. Suivez les instructions dans le fichier [SUPABASE_SETUP.md](SUPABASE_SETUP.md)
-2. Configurez le fichier `.env.local` avec vos identifiants Supabase
+## Building
 
-## Fonctionnalités
+To build the project run:
 
-- **Réservation d'activités** : Formulaire permettant aux visiteurs de réserver des activités équestres
-- **Actualités/Annonces** : Affichage des dernières nouvelles du centre équestre
-- **Espace administrateur** : Interface sécurisée pour gérer les réservations
+```bash
+ng build
+```
 
-## Déploiement
+This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
 
-Pour déployer l'application:
+## Running unit tests
 
-1. Configurez votre projet Supabase
-2. Déployez l'application sur [Vercel](https://vercel.com), [Netlify](https://netlify.com) ou votre hébergeur préféré
-3. Configurez les variables d'environnement sur votre plateforme d'hébergement
+To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
 
-## Ressources additionnelles
+```bash
+ng test
+```
 
-- [Documentation Next.js](https://nextjs.org/docs)
-- [Documentation Supabase](https://supabase.com/docs)
-- [Documentation Tailwind CSS](https://tailwindcss.com/docs)
+## Running end-to-end tests
+
+For end-to-end (e2e) testing, run:
+
+```bash
+ng e2e
+```
+
+Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+
+## Additional Resources
+
+For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
