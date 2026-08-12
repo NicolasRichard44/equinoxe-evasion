@@ -1,29 +1,16 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
 import { RevealDirective } from '../../shared/directives/reveal.directive';
 
-const API_ENDPOINT = '/api/contact';
-
-/**
- * Clé de site reCAPTCHA v3 (publique).
- * Obtenez la vôtre sur : https://www.google.com/recaptcha/admin/create
- * Choisissez reCAPTCHA v3 et ajoutez votre domaine.
- */
-const RECAPTCHA_SITE_KEY = 'VOTRE_CLE_DE_SITE_RECAPTCHA_V3';
+const FORMSUBMIT_ENDPOINT = 'https://formsubmit.co/ajax/5d9533549929730f1f2387d3b6845d00';
 
 interface ContactForm {
   firstName: string;
   lastName: string;
   email: string;
   message: string;
-  website: string; // honeypot
+  website: string; 
 }
-
-declare const grecaptcha: {
-  ready(cb: () => void): void;
-  execute(siteKey: string, options: { action: string }): Promise<string>;
-};
 
 @Component({
   selector: 'app-contact',
@@ -159,7 +146,7 @@ declare const grecaptcha: {
                     placeholder="Parlez-nous de votre projet, de vos attentes..."></textarea>
                 </div>
 
-                <!-- Bouton + badge reCAPTCHA -->
+                <!-- Bouton -->
                 <div class="space-y-3">
                   <button type="submit"
                     [disabled]="contactForm.invalid || state() === 'sending'"
@@ -169,7 +156,7 @@ declare const grecaptcha: {
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
                       </svg>
-                      Vérification en cours...
+                      Envoi en cours...
                     } @else {
                       Envoyer ma demande
                       <svg class="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -179,10 +166,7 @@ declare const grecaptcha: {
                   </button>
 
                   <p class="font-body text-earth-400 text-xs text-center">
-                    Protégé par reCAPTCHA —
-                    <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" class="underline hover:text-earth-600">Confidentialité</a>
-                    &amp;
-                    <a href="https://policies.google.com/terms" target="_blank" rel="noopener noreferrer" class="underline hover:text-earth-600">Conditions</a>
+                    Protection anti-spam activée
                   </p>
                 </div>
 
@@ -195,8 +179,7 @@ declare const grecaptcha: {
     </section>
   `,
 })
-export class ContactComponent implements OnInit {
-  private http = inject(HttpClient);
+export class ContactComponent {
 
   state = signal<'idle' | 'sending' | 'success' | 'error'>('idle');
   errorMessage = signal('Une erreur est survenue. Veuillez réessayer.');
@@ -221,59 +204,33 @@ export class ContactComponent implements OnInit {
     { day: 'Dimanche', time: 'Sur RDV uniquement' },
   ];
 
-  ngOnInit(): void {
-    this.loadRecaptchaScript();
-  }
-
-  private loadRecaptchaScript(): void {
-    if (typeof window === 'undefined') return;
-    if (RECAPTCHA_SITE_KEY === 'VOTRE_CLE_DE_SITE_RECAPTCHA_V3') return; // placeholder non configuré
-    if (document.getElementById('recaptcha-v3')) return; // déjà chargé
-    const script = document.createElement('script');
-    script.id  = 'recaptcha-v3';
-    script.src = `https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_SITE_KEY}`;
-    script.async = true;
-    document.head.appendChild(script);
-  }
-
   onSubmit(ngForm: NgForm): void {
     if (ngForm.invalid) return;
     this.state.set('sending');
-
-    // Si reCAPTCHA n'est pas configuré (dev) on envoie sans token
-    if (typeof grecaptcha === 'undefined' || RECAPTCHA_SITE_KEY === 'VOTRE_CLE_DE_SITE_RECAPTCHA_V3') {
-      this.sendForm('');
-      return;
-    }
-
-    grecaptcha.ready(() => {
-      grecaptcha
-        .execute(RECAPTCHA_SITE_KEY, { action: 'contact' })
-        .then((token: string) => this.sendForm(token))
-        .catch(() => {
-          this.errorMessage.set('Erreur de vérification reCAPTCHA. Veuillez réessayer.');
-          this.state.set('error');
-        });
-    });
+    this.sendForm();
   }
 
-  private sendForm(recaptchaToken: string): void {
+  private sendForm(): void {
     const payload = {
-      firstName:      this.form.firstName,
-      lastName:       this.form.lastName,
-      email:          this.form.email,
-      message:        this.form.message,
-      recaptchaToken,
-      website:        this.form.website,
+      _subject:  'Nouvelle demande de contact — Équinoxe Évasion',
+      _captcha:  'true',
+      _honey:    this.form.website, // honeypot
+      firstName: this.form.firstName,
+      lastName:  this.form.lastName,
+      email:     this.form.email,
+      message:   this.form.message,
     };
 
-    this.http.post<{ ok: boolean; error?: string }>(API_ENDPOINT, payload).subscribe({
-      next: () => this.state.set('success'),
-      error: (err) => {
-        this.errorMessage.set(err?.error?.error ?? 'Une erreur est survenue. Veuillez réessayer.');
+    fetch(FORMSUBMIT_ENDPOINT, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body:    JSON.stringify(payload),
+    })
+      .then(res => res.ok ? this.state.set('success') : Promise.reject(res))
+      .catch(() => {
+        this.errorMessage.set('Une erreur est survenue. Veuillez réessayer.');
         this.state.set('error');
-      },
-    });
+      });
   }
 
   reset(): void {
